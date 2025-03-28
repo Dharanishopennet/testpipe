@@ -1,34 +1,27 @@
 trigger:
-  branches:
-    include:
-      - main  
+- main  # Trigger the pipeline on push to the main branch (change if needed)
 
 pool:
-  vmImage: 'ubuntu-latest'  
+  vmImage: 'ubuntu-latest'  # Use Ubuntu as the build environment (you can choose other OS)
 
 steps:
-- task: Checkout@1
-  displayName: 'Checkout code from GitHub'
+- task: Checkout@2  # Checkout the code from the repository
 
-- task: UsePythonVersion@0
+- task: UsePythonVersion@0  # Setup Python version
   inputs:
-    versionSpec: '3.11'  # Use the appropriate Python version
-  displayName: 'Set up Python'
+    versionSpec: '3.11'  # Specify the Python version you want (e.g., 3.x)
 
 - script: |
-    python -m pip install --upgrade pip
-  displayName: 'Upgrade pip'
+    python -m pip install --upgrade pip  # Upgrade pip
+    #pip install -r requirements.txt  # Install dependencies (if any)
+  displayName: 'Install dependencies'
 
 - script: |
-    echo "Current working directory: $(System.DefaultWorkingDirectory)"  # Debug to check working directory
-    echo "Listing files in the current directory:"
-    ls -al  # List the files to confirm add.py is present
-  displayName: 'Check directory contents'
+    python add.py > output.log   # Run the Python script and save output to output.log
+  displayName: 'Run Python Script'
 
-- script: |
-    python add.py  # Run your Python script
-  displayName: 'Run Python script'
-
-- script: |
-    echo "Output is being displayed in the pipeline logs"
-  displayName: 'Display output message'
+- task: PublishBuildArtifacts@1  # Publish the output log as an artifact
+  inputs:
+    PathtoPublish: 'output.log'  # Path to the output log file
+    ArtifactName: 'output-log'  # Name of the artifact
+    publishLocation: 'Container'  # Publish location for the artifact
