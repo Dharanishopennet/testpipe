@@ -1,19 +1,23 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
+- main  # Trigger the pipeline when changes are made to the main branch
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'  # Specify the VM image to use for the build (you can use windows-latest as well)
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+# Checkout the code from the Git repository
+- task: Checkout@1
+  displayName: 'Checkout code'
 
+# Run your Python script (if it's a Python project) and capture the output in a text file
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+    python add.py > output.txt
+  displayName: 'Run Python script and save output'
+
+# Publish the output.txt file as an artifact
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'output.txt'  # Path to the output file
+    ArtifactName: 'output-artifact'  # Name of the artifact
+    publishLocation: 'Container'  # Store the artifact in the pipeline container
+  displayName: 'Publish output.txt as artifact'
