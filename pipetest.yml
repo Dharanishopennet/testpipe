@@ -1,27 +1,36 @@
 trigger:
-- main  # Trigger the pipeline on push to the main branch (change if needed)
+- main  # Trigger the pipeline when code is pushed to the main branch
 
 pool:
-  vmImage: 'ubuntu-latest'  # Use Ubuntu as the build environment (you can choose other OS)
+  vmImage: 'ubuntu-latest'  # Use the latest Ubuntu image for the pipeline
 
-steps:
-- task: Checkout@1  # Checkout the code from the repository
+jobs:
+- job: BuildAndTest
+  displayName: 'Build and Test Python Code'
+  steps:
+  
+    # Step 1: Checkout the code from the repository
+    - checkout: self  # Correct Checkout task for Azure Pipelines
+      displayName: 'Checkout Repository'
+    
+    # Step 2: Set up Python
+    - task: UsePythonVersion@0  # Correct task reference for setting up Python
+      inputs:
+        versionSpec: '3.11'  # Use Python version 3.x
+        addToPath: true  # Add Python to PATH
+    
+    # Step 3: Install dependencies
+    - script: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt  # Install dependencies from requirements.txt
+      displayName: 'Install dependencies'
 
-- task: UsePythonVersion@0  # Setup Python version
-  inputs:
-    versionSpec: '3.11'  # Specify the Python version you want (e.g., 3.x)
+    # Step 4: Run add.py file directly (if it doesn't have tests)
+    - script: |
+        python add.py  # Run add.py directly (modify this if you need to call specific functions)
+      displayName: 'Run add.py'
 
-- script: |
-    python -m pip install --upgrade pip  # Upgrade pip
-    #pip install -r requirements.txt  # Install dependencies (if any)
-  displayName: 'Install dependencies'
-
-- script: |
-    python add.py > output.log   # Run the Python script and save output to output.log
-  displayName: 'Run Python Script'
-
-- task: PublishBuildArtifacts@1  # Publish the output log as an artifact
-  inputs:
-    PathtoPublish: 'output.log'  # Path to the output log file
-    ArtifactName: 'output-log'  # Name of the artifact
-    publishLocation: 'Container'  # Publish location for the artifact
+    # Step 5: If you have tests to run with pytest
+    - script: |
+        pytest  # Run tests using pytest
+      displayName: 'Run Tests'
