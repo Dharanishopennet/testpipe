@@ -19,18 +19,12 @@ jobs:
         versionSpec: '3.11'  # Use Python version 3.x
         addToPath: true  # Add Python to PATH
     
-    # Step 3: Install dependencies
-    - script: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt  # Install dependencies from requirements.txt
-      displayName: 'Install dependencies'
-
-    # Step 4: Run add.py file directly (if it doesn't have tests)
+    # Step 3: Run add.py directly (No dependencies)
     - script: |
         python add.py  # Run add.py directly (modify this if you need to call specific functions)
       displayName: 'Run add.py'
 
-    # Step 5: If you have tests to run with pytest
+    # Step 4: If you have tests to run with pytest
     - script: |
         pytest  # Run tests using pytest
       displayName: 'Run Tests'
