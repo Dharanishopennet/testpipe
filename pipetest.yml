@@ -30,7 +30,12 @@ jobs:
         python add.py  # Run add.py directly (modify this if you need to call specific functions)
       displayName: 'Run add.py'
 
-    # Step 5: Run Tests with pytest
+    # Step 5: Run Tests with pytest and save output to a file
     - script: |
-        pytest  # Run tests using pytest
-      displayName: 'Run Tests'
+        pytest > result.log 2>&1  # Save test output to result.log file
+      displayName: 'Run Tests and Save Output'
+
+    # Step 6: Publish the test results as an artifact
+    - publish: $(System.DefaultWorkingDirectory)/result.log  # Path to the result log file
+      artifact: test-results  # Name of the artifact
+      displayName: 'Publish Test Results'
