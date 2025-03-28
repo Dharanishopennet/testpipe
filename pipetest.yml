@@ -1,30 +1,26 @@
 trigger:
-- main  # Trigger the pipeline when code is pushed to the main branch
-
+- main 
 pool:
-  vmImage: 'ubuntu-22.04'  # Use the latest Ubuntu image for the pipeline
+  vmImage: 'ubuntu-22.04' 
 
 jobs:
 - job: BuildAndRun
   displayName: 'Run Python Code and Save Output'
   steps:
-  
-    # Step 1: Checkout the code from the repository
-    - checkout: self  # Checkout task for Azure Pipelines
+ 
+    - checkout: self 
       displayName: 'Checkout Repository'
     
-    # Step 2: Set up Python
-    - task: UsePythonVersion@0  # Set up Python task
+   
+    - task: UsePythonVersion@0 
       inputs:
-        versionSpec: '3.11'  # Use Python version 3.x
-        addToPath: true  # Add Python to PATH
-    
-    # Step 3: Run the Python code and save the output
+        versionSpec: '3.11'
+        addToPath: true  
+ 
     - script: |
         python add.py > output.log 2>&1  # Run the code and save both stdout and stderr to output.log
       displayName: 'Run add.py and Save Output'
 
-    # Step 4: Publish the output as an artifact
-    - publish: $(System.DefaultWorkingDirectory)/output.log  # Path to the output file
-      artifact: python-output  # Name of the artifact
+    - publish: $(System.DefaultWorkingDirectory)/output.log 
+      artifact: python-output
       displayName: 'Publish Output as Artifact'
