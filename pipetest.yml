@@ -5,37 +5,26 @@ pool:
   vmImage: 'ubuntu-latest'  # Use the latest Ubuntu image for the pipeline
 
 jobs:
-- job: BuildAndTest
-  displayName: 'Build and Test Python Code'
+- job: BuildAndRun
+  displayName: 'Run Python Code and Save Output'
   steps:
   
     # Step 1: Checkout the code from the repository
-    - checkout: self  # Correct Checkout task for Azure Pipelines
+    - checkout: self  # Checkout task for Azure Pipelines
       displayName: 'Checkout Repository'
     
     # Step 2: Set up Python
-    - task: UsePythonVersion@0  # Correct task reference for setting up Python
+    - task: UsePythonVersion@0  # Set up Python task
       inputs:
         versionSpec: '3.11'  # Use Python version 3.x
         addToPath: true  # Add Python to PATH
     
-    # Step 3: Install pytest
+    # Step 3: Run the Python code and save the output
     - script: |
-        python -m pip install --upgrade pip
-        pip install pytest  # Install pytest to run tests
-      displayName: 'Install pytest'
+        python add.py > output.log 2>&1  # Run the code and save both stdout and stderr to output.log
+      displayName: 'Run add.py and Save Output'
 
-    # Step 4: Run add.py directly (No dependencies)
-    - script: |
-        python add.py  # Run add.py directly (modify this if you need to call specific functions)
-      displayName: 'Run add.py'
-
-    # Step 5: Run Tests with pytest and save output to a file
-    - script: |
-        pytest > result.log 2>&1  # Save test output to result.log file
-      displayName: 'Run Tests and Save Output'
-
-    # Step 6: Publish the test results as an artifact
-    - publish: $(System.DefaultWorkingDirectory)/result.log  # Path to the result log file
-      artifact: test-results  # Name of the artifact
-      displayName: 'Publish Test Results'
+    # Step 4: Publish the output as an artifact
+    - publish: $(System.DefaultWorkingDirectory)/output.log  # Path to the output file
+      artifact: python-output  # Name of the artifact
+      displayName: 'Publish Output as Artifact'
