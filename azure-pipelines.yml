@@ -22,9 +22,16 @@ steps:
   displayName: 'Install dependencies'
 
 - script: |
+    echo "Current working directory: $(System.DefaultWorkingDirectory)"  # Debug step to print working directory
+    echo "Listing files in the current directory:"
+    ls -al  # List the files in the directory to ensure add.py is present
+  displayName: 'Debug step - Check directory contents'
+
+- script: |
     python add.py  # Run your Python script
   displayName: 'Run Python script'
 
 - script: |
     echo "Output is being displayed in the pipeline logs"  # Optional message
   displayName: 'Display output message'
+
